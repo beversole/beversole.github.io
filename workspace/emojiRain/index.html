@@ -1,0 +1,230 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>emoji rain</title>
+
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.10.0/matter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.3/p5.min.js"></script>
+  <script>
+
+  //sketch global vars
+  var sceneWidth;
+  var sceneHeight;
+  var heartCnt = 0;
+  var sadCnt = 0;
+  var newHeartCnt = 0;
+  var newSadCnt = 0;
+  var totalNewHeartCnt = 0;
+  var totalNewSadCnt = 0;
+
+  // matter global vars
+  var Engine = Matter.Engine,
+      Render = Matter.Render,
+      World = Matter.World,
+      Bodies = Matter.Bodies,
+      engine,
+      render;
+
+  // setup
+  function setup(){
+    createCanvas(0,0)
+    $.ajaxSetup({ cache: false });
+    frameRate(1);
+    sceneWidth = windowWidth;
+    sceneHeight = windowHeight;
+    // initialize physics scene
+    initMatter();
+  }
+
+  //
+  function draw(){
+    //Get new emoji counts
+    //current frame rate is once per second
+    getCnts();
+  }
+
+  // get realtime emoji counts from twitter
+  // courtesy of this wonderful site http://emojitracker.com/
+  function getCnts(){
+    $.getJSON( "http://emojitracker.com/api/rankings", function( data ) {
+      processNewCnts(data);
+    });
+  }
+
+  // Handle async response from emojitracker
+  // increment counts & update stats
+  function processNewCnts(data){
+    var items = [];
+    var heartHtm = '';
+    var sadHtm = '';
+
+    $.each( data, function( key, val ) {
+
+      if(val.id=="2764"){
+        newHeartCnt = val.score;
+      }
+      if(val.id=="1F629"){
+        newSadCnt = val.score;
+      }
+    });
+
+    if(heartCnt!=0){
+      newHeartCnt = newHeartCnt-heartCnt;
+      heartCnt += newHeartCnt;
+      newSadCnt = newSadCnt-sadCnt;
+      sadCnt += newSadCnt;
+    }else{
+      heartCnt = newHeartCnt;
+      newHeartCnt = 0;
+      sadCnt = newSadCnt;
+      newSadCnt = 0;
+    }
+
+    // For each new heart/sad emoji add new matter body
+    for (i = 0; i < newSadCnt; i++) {
+      addSadBox();
+    }
+    for (i = 0; i < newHeartCnt; i++) {
+      addHeartBox();
+    }
+
+    totalNewHeartCnt += newHeartCnt;
+    totalNewSadCnt += newSadCnt;
+
+    // Update stats
+    $("#divHeartCnt").html('<b>' + numberWithCommas(totalNewHeartCnt) + '</b>');
+    $("#divSadCnt").html('<b>' + numberWithCommas(totalNewSadCnt) + '</b>');
+
+  }
+
+  // Initialize Matter physics scene
+  function initMatter(){
+    // create an engine
+    engine = Engine.create();
+
+    // create a renderer
+    render = Render.create({
+        element: document.body,
+        engine: engine
+    });
+
+    var umbrell = Bodies.circle(sceneWidth/2, sceneHeight/2, 170, {
+      isStatic: true,
+      render: {
+        sprite: {
+            xScale : .8,
+            yScale : .8,
+            texture: 'http://umbrellascustom.com/wp-content/uploads/2016/02/navy-single-alu-1.png'
+        }
+      }
+    });
+
+    // add our umbrell to world
+    World.add(engine.world, [umbrell]);
+
+    // create one sad face to start things off
+    addSadBox();
+
+    render.options.wireframes = false
+
+    $("canvas").attr("width",sceneWidth);
+    $("canvas").attr("height",sceneHeight);
+    render.options.width = sceneWidth;
+    render.options.height = sceneHeight;
+
+    $("#divStats").css("left",sceneWidth/2-140 + "px");
+    $("#divStats").css("top",sceneHeight/2-100 + "px");
+
+    // run the engine
+    Engine.run(engine);
+    // run the renderer
+    Render.run(render);
+  }
+
+  // function to add new heart emoji to world
+  function addHeartBox(){
+    var boxA = Bodies.circle(getRandomArbitrary(25,sceneWidth-25), -75, 13, {
+      density: 0.0005,
+      frictionAir: 0.5,
+      restitution: 0.3,
+      friction: 0.01,
+      render: {
+        sprite: {
+            xScale : .20,
+            yScale : .20,
+            texture: 'http://emojipedia-us.s3.amazonaws.com/cache/66/29/66298a09196951d6dcd1109a4ae7ff3f.png'
+        }
+      }
+    })
+
+    World.add(engine.world,boxA);
+  }
+
+  // function to add new sad emoji to world
+  function addSadBox(){
+    var boxA = Bodies.circle(getRandomArbitrary(25,sceneWidth-25), -50, 16, {
+      density: 0.00005,
+      frictionAir: 0.05,
+      restitution: 0.5,
+      friction: 0.01,
+      render: {
+        sprite: {
+            xScale : .30,
+            yScale : .30,
+            texture: 'http://emojipedia-us.s3.amazonaws.com/cache/1b/80/1b8020b0c2c01c624428cb4fc755e5be.png'
+        }
+      }
+    })
+
+    World.add(engine.world,boxA);
+  }
+
+  // Utilites
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Handle window resize
+  $( window ).resize(function() {
+    sceneWidth = windowWidth;
+    sceneHeight = windowHeight;
+    $("canvas").attr("width",sceneWidth);
+    $("canvas").attr("height",sceneHeight);
+    render.options.width = sceneWidth;
+    render.options.height = sceneHeight;
+  });
+
+  </script>
+</head>
+
+<body>
+  <div id="divStats" style="position:absolute;font-family:serif;text-align:center;font-size:50px;">
+
+    <div style="font-size:20px;color:#ffffff;position:relative;top:-40px;">
+      emoji tweets<br/>
+      in real time<br/>
+      <a style="color:#cccccc;font-size:14px;" href="http://emojitracker.com/" target="_blank">data from emojitraker</a>
+    </div>
+    <div style="display:block;float:left" id="divSad">
+      <img style="height:150px;" src="http://emojipedia-us.s3.amazonaws.com/cache/1b/80/1b8020b0c2c01c624428cb4fc755e5be.png" />
+      <div id="divSadCnt"></div>
+      <div id="divNewSadCnt"></div>
+    </div>
+    <div style="display:block;float:left;" id="divHeart">
+      <img style="height:150px;" src="http://emojipedia-us.s3.amazonaws.com/cache/66/29/66298a09196951d6dcd1109a4ae7ff3f.png" />
+      <div id="divHeartCnt"></div>
+      <div id="divNewHeartCnt"></div>
+    </div>
+
+  </div>
+</body>
+
+</html>
