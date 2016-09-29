@@ -50,7 +50,7 @@
   // get realtime emoji counts from twitter
   // courtesy of this wonderful site http://emojitracker.com/
   function getCnts(){
-    $.getJSON( "https://emojitracker.com/api/rankings", function( data ) {
+    $.getJSON( "http://emojitracker.com/api/rankings", function( data ) {
       processNewCnts(data);
     });
   }
