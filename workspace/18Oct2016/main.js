@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 function loadNextPage(){
   if(isLoad===true){
 
-    var url = 'http://' + lastTumblr + '.tumblr.com/page/'
+    var url = 'https://' + lastTumblr + '.tumblr.com/page/'
     $.ajax({
         url: url + curPage,
         type: 'GET',
