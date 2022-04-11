@@ -1,30 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>Brandon Eversole | beversole | GitHub</title>
+<style>
+  @keyframes at1 {from {transform: translateX(75px) rotateY(15deg) translateX(75px);} to {transform: translateX(75px) rotateY(165deg) translateX(75px);}}
+  @keyframes at3 {from {transform: translateX(-75px) rotateY(15deg) translateX(-75px);} to {transform: translateX(-75px) rotateY(165deg) translateX(-75px);}}
+  @keyframes abg1 {from {background-size:  115px 115px;} to {background-size:  90px 90px;}}
+  @keyframes aol1 {from {background-color: rgba(0,0,0, 0.9);} to {background-color: rgba(0,0,0, 0.0);}}
+  @keyframes at2 {from {background-size:  800px 140px;} to {background-size:  80px 140px;}}
 
-    <style>
+  #c{ padding: 20px; min-width:700px; list-style: none; margin: 0; position: absolute;top: 50%; left:50%; transform: translateY(-50%) translateX(-50%);}
+  .t{float:left; width:150px; height:600px; margin:10px;}
+  #t1{ background-color: #000000; animation: at1 6s infinite ease-in-out alternate;}
+  #t2{ background-color: #ff0000; animation: at2 8s infinite ease-in-out alternate; width:300px;}
+  #t3{ background-color: #00f0f0; animation: at3 12s infinite ease-in-out alternate;}
 
-      body{
-        background-color:#21252b;
-        color:#ffffff;
-        font-family: serif;
+  .zigzag1{
+      background-color: #ffffff;
+      opacity: 1.;
+      background-image:
+        linear-gradient(135deg, #000000 25%, transparent 25%),
+        linear-gradient(225deg, #000000 25%, transparent 25%),
+        linear-gradient(45deg, #000000 25%, transparent 25%),
+        linear-gradient(315deg, #000000 25%, #ffffff 25%);
+      background-position:  40px 0, 40px 0, 0 0, 0 0;
+      background-size: 80px 80px;
+      background-repeat: repeat;}
 
-      }
+  .iso1{
+      background-color: #ffffff;
+      opacity: 1;
+      background-image:
+        linear-gradient(30deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
+        linear-gradient(150deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
+        linear-gradient(30deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
+        linear-gradient(150deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
+        linear-gradient(60deg, #00000077 25%, transparent 25.5%, transparent 75%, #00000077 75%, #00000077),
+        linear-gradient(60deg, #00000077 25%, transparent 25.5%, transparent 75%, #00000077 75%, #00000077);
+      background-size: 80px 140px;
+      background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+  }
 
-      .msg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size:60px;
-      }
-    </style>
+  .poka1{
+    background-color: #ffffff;
+    opacity: 1;
+    background-image:  radial-gradient(#eeeeee 2px, transparent 2px), radial-gradient(#eeeeee 12px, #ffffff 2px);
+    background-size: 80px 80px;
+    background-position: 0 0,40px 40px;
+  }
 
-	</head>
-	<body>
-    <div class="msg">Hello!</div>
-	</body>
-</html>
+  .slash1{
+    background-color: #ffffff;
+    opacity: 1;
+    background-size: 28px 28px;
+    background-image: repeating-linear-gradient(45deg, #ffffff 0, #ffffff 2px, #000000 0, #000000 50%);
+  }
+
+  .waavy1{
+    background-color: #ffffff;
+    opacity: 1;
+    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #000000 600px ), repeating-linear-gradient( #666666, #000000 );
+  }
+
+  .overlay { height: 100%; width: 100%;
+    position: fixed; z-index: 1; left: 0; top: 0; background-color: rgba(0,0,0, 0.9); overflow-x: hidden;
+  }
+
+</style>
+
+<body class="slash1" style="animation: abg1 6s infinite ease-in-out alternate;" >
+
+<ul id="c">
+  <li id="t1" class="t zigzag1"></li>
+  <li id="t2" class="t iso1"></li>
+  <li id="t3" class="t zigzag1"></li>
+</ul>
+
+<div class="overlay" style="animation: aol1 6s infinite ease-in-out alternate;">Some Overlay</div>
+
+</body>
